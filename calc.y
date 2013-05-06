@@ -1,13 +1,26 @@
 %{
 #include <stdio.h>
 #include <ctype.h>
+#include "ds/symtab.h"
+int notFound;
+char *fromLex;
+SymTable table;
 %}
 
-%token NUMBER
+%token NUMBER VARIABLE QUIT ENDOFCMD
 
 %%
 
-command : exp   { printf("%d\n",$1); }
+input : command input
+      |
+      ;
+
+command : exp ENDOFCMD { printf("= %d\n",$1); }
+        | QUIT ENDOFCMD {
+                          printf("Bye!\n");
+                          return 0;
+                        }
+        | ENDOFCMD { printf("= 0\n"); }
         ;
 
 exp : exp '+' term { $$ = $1 + $3; }
@@ -20,6 +33,15 @@ term : term '*' factor { $$ = $1 * $3; }
      ;
 
 factor : NUMBER  { $$ = $1; }
+       | VARIABLE {
+                    int val = lookup(table,fromLex,&notFound);
+                    if(notFound) {
+                      fprintf(stderr,"Warning: Symbol <%s> not defined, assuming 0\n",fromLex);
+                      $$ = 0;
+                    } else {
+                      $$ = val;
+                    }
+                  }
        | '(' exp ')'  { $$ = $2; }
        ;
 
@@ -27,6 +49,7 @@ factor : NUMBER  { $$ = $1; }
 
 int main(void)
 {
+  table = createSymTable();
   return yyparse();
 }
 
