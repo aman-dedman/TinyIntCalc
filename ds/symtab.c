@@ -1,6 +1,7 @@
 #include "symtab.h"
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 SymTable createSymTable()
 {
@@ -18,9 +19,7 @@ int hash(String s)
 
 Node *lookintable(SymTable table, String s)
 {
-  if(!s) {
-    return 0;
-  }
+  assert(s);
   int h = hash(s);
   Node *tmp = table[h];
   while(tmp) {
@@ -43,7 +42,7 @@ int lookup(SymTable table, String s, int *notFound)
   
 void insert(SymTable table, String s, int value)
 {
-  if(!s) return;
+  assert(s);
   int h = hash(s);
   Node *tmp = (Node*)malloc(sizeof(Node));
   strcpy(tmp->key,s);

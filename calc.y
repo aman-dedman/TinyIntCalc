@@ -2,13 +2,26 @@
 #include <stdio.h>
 #include <ctype.h>
 #include "ds/symtab.h"
+#include <assert.h>
 int notFound;
-char *fromLex;
 SymTable table;
 %}
 
-%token NUMBER VARIABLE QUIT ENDOFCMD
+%union {
+  int number;
+  char *string;
+}
 
+%token <number> NUMBER
+%token <number> QUIT
+%token <number> ENDOFCMD
+%token <string> VARIABLE
+
+%type <number> factor
+%type <number> exp
+%type <number> command
+%type <number> input
+%type <number> term
 %%
 
 input : command input
@@ -34,9 +47,9 @@ term : term '*' factor { $$ = $1 * $3; }
 
 factor : NUMBER  { $$ = $1; }
        | VARIABLE {
-                    int val = lookup(table,fromLex,&notFound);
+                    int val = lookup(table,$1,&notFound);
                     if(notFound) {
-                      fprintf(stderr,"Warning: Symbol <%s> not defined, assuming 0\n",fromLex);
+                      fprintf(stderr,"Warning: Symbol <%s> not defined, assuming 0\n",$1);
                       $$ = 0;
                     } else {
                       $$ = val;

@@ -1,8 +1,8 @@
 %{
 #include "y.tab.h"
 #include "ds/symtab.h"
+#include <assert.h>
 extern SymTable table;
-extern char *fromLex;
 %}
 number [0-9]+
 id [a-zA-Z]+
@@ -13,16 +13,16 @@ QUIT  {
       }
 
 {number}  {
-            yylval=atoi( yytext );
+            yylval.number = atoi( yytext );
             return NUMBER;
           }
 
 {id}  {
-        fromLex = yytext;
+        yylval.string = strdup(yytext);
         return VARIABLE;
       }
 
-[^ \n]  { return yylval = yytext[0]; }
+[^ \n]  { return yylval.number = yytext[0]; }
 
 \n  {
       return ENDOFCMD;

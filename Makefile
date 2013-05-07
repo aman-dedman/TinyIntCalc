@@ -14,4 +14,4 @@ dstests : ds/unittest.c ds/symtab.o
 	gcc -Wall ds/unittest.c ds/symtab.o -o dstests
 
 clean :
-	@rm lex.yy.c y.tab.* calc dstests ds/symtab.o
+	@rm lex.yy.c y.tab.* calc dstests symtab.o
